@@ -1,0 +1,51 @@
+{
+  "id": "dragon-mem",
+  "name": "DragonMem",
+  "description": "DragonMem — DragonflyDB Unified Memory System for OpenClaw (龙记忆 - 一体化存储系统)",
+  "version": "1.0.0",
+  "openclaw": {
+    "compat": {
+      "pluginApi": "1.0.0"
+    },
+    "build": {
+      "openclawVersion": "2026.3.28"
+    },
+    "extensions": [
+      "memory",
+      "semantic-search",
+      "unified-storage",
+      "multi-agent"
+    ]
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "properties": {
+      "autoInject": {
+        "type": "boolean",
+        "default": true,
+        "description": "自动注入记忆到上下文"
+      },
+      "autoSave": {
+        "type": "boolean",
+        "default": true,
+        "description": "自动保存对话到记忆"
+      },
+      "maxMemories": {
+        "type": "number",
+        "default": 3,
+        "description": "自动注入的最大记忆数量"
+      },
+      "dragonflyUrl": {
+        "type": "string",
+        "default": "redis://localhost:6379",
+        "description": "DragonflyDB 连接 URL"
+      },
+      "vectorIndex": {
+        "type": "string",
+        "default": "idx:dragonmem",
+        "description": "向量索引名称"
+      }
+    }
+  }
+}

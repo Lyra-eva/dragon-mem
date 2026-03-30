@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tgz
+*.log
+server/data/
+server/logs/
+.DS_Store
+.git-credentials
+.env

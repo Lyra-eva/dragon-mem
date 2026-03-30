@@ -1,0 +1,11 @@
+# DragonMem Server Dependencies
+# Install: pip3 install -r requirements.txt
+
+# DragonflyDB/Redis Client
+redis>=4.0.0
+
+# HTTP Server (built-in)
+# http.server
+
+# Utilities
+numpy>=1.20.0

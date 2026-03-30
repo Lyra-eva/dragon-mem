@@ -1,0 +1,65 @@
+{
+  "name": "@ggvc/dragon-mem",
+  "version": "1.0.0",
+  "description": "DragonMem — DragonflyDB Unified Memory System for OpenClaw (龙记忆 - 一体化存储系统)",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "python3 server/dragon_server.py",
+    "test": "jest",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "openclaw",
+    "plugin",
+    "memory",
+    "dragonflydb",
+    "unified-storage",
+    "vector-search",
+    "semantic-search"
+  ],
+  "author": "ggvc",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lyra-eva/dragon-mem.git"
+  },
+  "homepage": "https://github.com/Lyra-eva/dragon-mem#readme",
+  "bugs": {
+    "url": "https://github.com/Lyra-eva/dragon-mem/issues"
+  },
+  "openclaw": {
+    "compat": {
+      "pluginApi": "1.0.0"
+    },
+    "build": {
+      "openclawVersion": "2026.3.28"
+    },
+    "extensions": [
+      "memory",
+      "semantic-search",
+      "unified-storage",
+      "multi-agent"
+    ]
+  },
+  "dependencies": {
+    "@hasanshoaib/ai-kit": "^0.5.18",
+    "@sinclair/typebox": "^0.32.0",
+    "redis": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "server/*.py",
+    "server/requirements.txt",
+    "README.md",
+    "LICENSE",
+    "openclaw.plugin.json"
+  ]
+}
