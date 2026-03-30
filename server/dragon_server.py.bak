@@ -274,109 +274,6 @@ class Handler(BaseHTTPRequestHandler):
             logger.error(f"Create index error: {e}")
             self._json_response({'error': str(e)}, 500)
 
-    # ===== 类脑功能 API 方法 =====
-    
-    def _handle_pattern_completion(self, data):
-        """模式完成 - PageRank 图扩散"""
-        try:
-            from server.pattern_completion import pattern_completion
-            
-            client = get_dragonfly_client()
-            if not client:
-                self._json_response({'error': 'DragonflyDB not connected'}, 503)
-                return
-            
-            query = data.get('query', '')
-            agent_id = data.get('agent_id', 'main')
-            top_k = data.get('top_k', 10)
-            
-            results = pattern_completion(client, query, agent_id, top_k)
-            self._json_response({'results': results, 'count': len(results)})
-        except Exception as e:
-            logger.error(f"Pattern completion error: {e}")
-            self._json_response({'error': str(e)}, 500)
-
-    def _handle_cluster_activation(self, data):
-        """聚类激活 - Louvain 社区发现"""
-        try:
-            from server.cluster_activation import cluster_activation
-            
-            client = get_dragonfly_client()
-            if not client:
-                self._json_response({'error': 'DragonflyDB not connected'}, 503)
-                return
-            
-            action = data.get('action', 'activate')
-            seed_memory_id = data.get('seed_memory_id', '')
-            agent_id = data.get('agent_id', 'main')
-            
-            results = cluster_activation(client, action, seed_memory_id, agent_id)
-            self._json_response({'results': results, 'count': len(results)})
-        except Exception as e:
-            logger.error(f"Cluster activation error: {e}")
-            self._json_response({'error': str(e)}, 500)
-
-    def _handle_multi_hop_search(self, data):
-        """多跳检索 - BFS 图遍历"""
-        try:
-            from server.multi_hop_search import multi_hop_search
-            
-            client = get_dragonfly_client()
-            if not client:
-                self._json_response({'error': 'DragonflyDB not connected'}, 503)
-                return
-            
-            query = data.get('query', '')
-            agent_id = data.get('agent_id', 'main')
-            hops = data.get('hops', 2)
-            limit = data.get('limit', 10)
-            
-            results = multi_hop_search(client, query, agent_id, hops, limit)
-            self._json_response({'results': results, 'count': len(results)})
-        except Exception as e:
-            logger.error(f"Multi-hop search error: {e}")
-            self._json_response({'error': str(e)}, 500)
-
-    def _handle_consolidate(self, data):
-        """记忆巩固 - 从 episodes 提取主题"""
-        try:
-            from server.consolidate_memories import consolidate_memories
-            
-            client = get_dragonfly_client()
-            if not client:
-                self._json_response({'error': 'DragonflyDB not connected'}, 503)
-                return
-            
-            agent_id = data.get('agent_id', 'main')
-            min_count = data.get('min_count', 10)
-            
-            result = consolidate_memories(client, agent_id, min_count)
-            self._json_response(result)
-        except Exception as e:
-            logger.error(f"Consolidate error: {e}")
-            self._json_response({'error': str(e)}, 500)
-
-    def _handle_synaptic_pruning(self, data):
-        """突触修剪 - 删除低重要性记忆"""
-        try:
-            from server.synaptic_pruning import synaptic_pruning
-            
-            client = get_dragonfly_client()
-            if not client:
-                self._json_response({'error': 'DragonflyDB not connected'}, 503)
-                return
-            
-            agent_id = data.get('agent_id', 'main')
-            max_age_days = data.get('max_age_days', 90)
-            min_importance = data.get('min_importance', 0.2)
-            
-            result = synaptic_pruning(client, agent_id, max_age_days, min_importance)
-            self._json_response(result)
-        except Exception as e:
-            logger.error(f"Synaptic pruning error: {e}")
-            self._json_response({'error': str(e)}, 500)
-
-
 def main():
     """主函数"""
     # 确保日志目录存在
@@ -404,4 +301,121 @@ if __name__ == '__main__':
     main()
 
 # ===== 类脑功能 API =====
+
+def _handle_pattern_completion(self, data: Dict):
+    """模式完成 - PageRank 图扩散"""
+    try:
+        from server.pattern_completion import pattern_completion
+        
+        client = get_dragonfly_client()
+        if not client:
+            self._json_response({'error': 'DragonflyDB not connected'}, 503)
+            return
+        
+        query = data.get('query', '')
+        agent_id = data.get('agent_id', 'main')
+        top_k = data.get('top_k', 10)
+        
+        # 执行模式完成
+        results = pattern_completion(client, query, agent_id, top_k)
+        
+        self._json_response({'results': results, 'count': len(results)})
+    except Exception as e:
+        logger.error(f"Pattern completion error: {e}")
+        self._json_response({'error': str(e)}, 500)
+
+def _handle_cluster_activation(self, data: Dict):
+    """聚类激活 - Louvain 社区发现"""
+    try:
+        from server.cluster_activation import cluster_activation
+        
+        client = get_dragonfly_client()
+        if not client:
+            self._json_response({'error': 'DragonflyDB not connected'}, 503)
+            return
+        
+        action = data.get('action', 'activate')
+        seed_memory_id = data.get('seed_memory_id', '')
+        agent_id = data.get('agent_id', 'main')
+        
+        # 执行聚类激活
+        results = cluster_activation(client, action, seed_memory_id, agent_id)
+        
+        self._json_response({'results': results, 'count': len(results)})
+    except Exception as e:
+        logger.error(f"Cluster activation error: {e}")
+        self._json_response({'error': str(e)}, 500)
+
+def _handle_multi_hop_search(self, data: Dict):
+    """多跳检索 - BFS 图遍历"""
+    try:
+        from server.multi_hop_search import multi_hop_search
+        
+        client = get_dragonfly_client()
+        if not client:
+            self._json_response({'error': 'DragonflyDB not connected'}, 503)
+            return
+        
+        query = data.get('query', '')
+        agent_id = data.get('agent_id', 'main')
+        hops = data.get('hops', 2)
+        limit = data.get('limit', 10)
+        
+        # 执行多跳检索
+        results = multi_hop_search(client, query, agent_id, hops, limit)
+        
+        self._json_response({'results': results, 'count': len(results)})
+    except Exception as e:
+        logger.error(f"Multi-hop search error: {e}")
+        self._json_response({'error': str(e)}, 500)
+
+def _handle_consolidate(self, data: Dict):
+    """记忆巩固 - 从 episodes 提取主题"""
+    try:
+        from server.consolidate_memories import consolidate_memories
+        
+        client = get_dragonfly_client()
+        if not client:
+            self._json_response({'error': 'DragonflyDB not connected'}, 503)
+            return
+        
+        agent_id = data.get('agent_id', 'main')
+        min_count = data.get('min_count', 10)
+        
+        # 执行记忆巩固
+        result = consolidate_memories(client, agent_id, min_count)
+        
+        self._json_response(result)
+    except Exception as e:
+        logger.error(f"Consolidate error: {e}")
+        self._json_response({'error': str(e)}, 500)
+
+def _handle_synaptic_pruning(self, data: Dict):
+    """突触修剪 - 删除低重要性记忆"""
+    try:
+        from server.synaptic_pruning import synaptic_pruning
+        
+        client = get_dragonfly_client()
+        if not client:
+            self._json_response({'error': 'DragonflyDB not connected'}, 503)
+            return
+        
+        agent_id = data.get('agent_id', 'main')
+        max_age_days = data.get('max_age_days', 90)
+        min_importance = data.get('min_importance', 0.2)
+        
+        # 执行突触修剪
+        result = synaptic_pruning(client, agent_id, max_age_days, min_importance)
+        
+        self._json_response(result)
+    except Exception as e:
+        logger.error(f"Synaptic pruning error: {e}")
+        self._json_response({'error': str(e)}, 500)
+
+# 将处理方法绑定到 Handler 类
+Handler._handle_pattern_completion = _handle_pattern_completion
+Handler._handle_cluster_activation = _handle_cluster_activation
+Handler._handle_multi_hop_search = _handle_multi_hop_search
+Handler._handle_consolidate = _handle_consolidate
+Handler._handle_synaptic_pruning = _handle_synaptic_pruning
 

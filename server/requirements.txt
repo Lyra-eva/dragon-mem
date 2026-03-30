@@ -9,3 +9,8 @@ redis>=4.0.0
 
 # Utilities
 numpy>=1.20.0
+
+# 类脑功能依赖
+networkx>=2.8.0          # 图算法（PageRank、BFS）
+python-louvain>=0.16     # Louvain 社区发现
+scikit-learn>=1.0.0      # 机器学习工具

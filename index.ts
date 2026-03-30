@@ -198,6 +198,129 @@ export default definePluginEntry({
       }
     });
 
+    // 工具 4: pattern_completion - 模式完成
+    api.registerTool({
+      name: 'pattern_completion',
+      description: '模式完成（PageRank 图扩散）- 根据线索回忆完整记忆簇',
+      parameters: Type.Object({
+        query: Type.String({ description: '搜索查询/线索' }),
+        agent_id: Type.Optional(Type.String({ description: '智能体 ID', default: 'main' })),
+        top_k: Type.Optional(Type.Number({ description: '返回数量', default: 10 }))
+      }),
+      async execute(_id: string, params: any) {
+        try {
+          const resp = await fetch(`${config.dragonflyUrl?.replace('redis://', 'http://') || 'http://127.0.0.1:9722'}/pattern_completion`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              query: params.query,
+              agent_id: params.agent_id || 'main',
+              top_k: params.top_k || 10
+            })
+          });
+          const data = await resp.json();
+          const results = data.results || [];
+          
+          const text = results.length > 0
+            ? `🧠 模式完成：找到 ${results.length} 条相关记忆\n\n` +
+              results.map((r: any, i: number) => `${i+1}. [hop=${r.hop||0}] ${(r.content||'').slice(0,150)}...`).join('\n')
+            : '未找到相关记忆';
+          return { content: [{ type: 'text', text }] };
+        } catch (e) {
+          return { content: [{ type: 'text', text: `❌ 失败：${(e as Error).message}` }] };
+        }
+      }
+    });
+
+    // 工具 5: cluster_activation - 聚类激活
+    api.registerTool({
+      name: 'cluster_activation',
+      description: '聚类激活（Louvain 社区发现）- 激活整个记忆簇',
+      parameters: Type.Object({
+        action: Type.Optional(Type.String({ description: '操作', default: 'activate' })),
+        seed_memory_id: Type.Optional(Type.String({ description: '种子记忆 ID' })),
+        agent_id: Type.Optional(Type.String({ description: '智能体 ID', default: 'main' }))
+      }),
+      async execute(_id: string, params: any) {
+        try {
+          const resp = await fetch(`${config.dragonflyUrl?.replace('redis://', 'http://') || 'http://127.0.0.1:9722'}/cluster_activation`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+          });
+          const data = await resp.json();
+          const results = data.results || [];
+          
+          const text = results.length > 0
+            ? `🧠 聚类激活：找到 ${results.length} 条相关记忆\n\n` +
+              results.map((r: any, i: number) => `${i+1}. ${(r.content||'').slice(0,150)}...`).join('\n')
+            : '未找到相关记忆';
+          return { content: [{ type: 'text', text }] };
+        } catch (e) {
+          return { content: [{ type: 'text', text: `❌ 失败：${(e as Error).message}` }] };
+        }
+      }
+    });
+
+    // 工具 6: multi_hop_search - 多跳检索
+    api.registerTool({
+      name: 'multi_hop_search',
+      description: '多跳检索（BFS 图遍历）- A→B→C 链式联想',
+      parameters: Type.Object({
+        query: Type.String({ description: '搜索查询' }),
+        hops: Type.Optional(Type.Number({ description: '跳数', default: 2 })),
+        limit: Type.Optional(Type.Number({ description: '返回数量', default: 10 })),
+        agent_id: Type.Optional(Type.String({ description: '智能体 ID', default: 'main' }))
+      }),
+      async execute(_id: string, params: any) {
+        try {
+          const resp = await fetch(`${config.dragonflyUrl?.replace('redis://', 'http://') || 'http://127.0.0.1:9722'}/multi_hop_search`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+          });
+          const data = await resp.json();
+          const results = data.results || [];
+          
+          const text = results.length > 0
+            ? `🧠 多跳检索 (${params.hops||2}跳)：找到 ${results.length} 条相关记忆\n\n` +
+              results.map((r: any, i: number) => `${i+1}. [hop=${r.hop||0}] ${(r.content||'').slice(0,150)}...`).join('\n')
+            : '未找到相关记忆';
+          return { content: [{ type: 'text', text }] };
+        } catch (e) {
+          return { content: [{ type: 'text', text: `❌ 失败：${(e as Error).message}` }] };
+        }
+      }
+    });
+
+    // 工具 7: consolidate_memories - 记忆巩固
+    api.registerTool({
+      name: 'consolidate_memories',
+      description: '记忆巩固 - 从 episodes 提取高频主题生成 semantic 记忆',
+      parameters: Type.Object({
+        agent_id: Type.Optional(Type.String({ description: '智能体 ID', default: 'main' })),
+        min_count: Type.Optional(Type.Number({ description: '最小 episode 数量', default: 10 }))
+      }),
+      async execute(_id: string, params: any) {
+        try {
+          const resp = await fetch(`${config.dragonflyUrl?.replace('redis://', 'http://') || 'http://127.0.0.1:9722'}/consolidate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+          });
+          const data = await resp.json();
+          
+          const text = `🧠 记忆巩固完成\n` +
+            `- 分析 episodes: ${data.episodes_analyzed || 0}条\n` +
+            `- 提取主题：${data.themes_extracted || 0}个\n` +
+            `- 新建 concepts: ${data.concepts_created || 0}个`;
+          return { content: [{ type: 'text', text }] };
+        } catch (e) {
+          return { content: [{ type: 'text', text: `❌ 失败：${(e as Error).message}` }] };
+        }
+      }
+    });
+
     debugLog('DragonMem plugin registered');
   },
 });
